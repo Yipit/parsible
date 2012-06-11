@@ -129,7 +129,6 @@ if __name__ == '__main__':
                          action='store',
                          help='Name of the parsing method to use, should start with "parse_", Ex: parse_nginx',
                          dest='parser'
-                         default=None
                         )
 
     cmdline.add_argument('--pid-file', 
