@@ -121,7 +121,8 @@ if __name__ == '__main__':
                          '-l', 
                          action='store',
                          help='The absolute path to the log file to be parsed, Ex: /var/log/mylog',
-                         dest='input_file'
+                         dest='input_file',
+                         required=True
                         )
 
     cmdline.add_argument('--parser', 
@@ -139,6 +140,8 @@ if __name__ == '__main__':
                          dest='pid_file',
                          default='/tmp/parsible.pid'
                         )
-   
-    p = Parsible(input_file, parser, pid_file)
+
+    args = cmdline.parse_args()
+    import pdb; pdb.set_trace()
+    p = Parsible(args.input_file, args.parser, args.pid_file)
     p.main()
