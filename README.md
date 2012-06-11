@@ -80,6 +80,13 @@ And After
 ## Usage
 =========
 
+1. Clone Parsible
+2. Write your parser (or use one someone else wrote!)
+3. Figure out how you want to process your log lines and write some processors
+4. Set up any outputs you want to use
+5. Run it! (We keep ours under `supervisord`)
+
+
 ```bash
 parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser parse_nginx
 ```
