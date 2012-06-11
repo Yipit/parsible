@@ -128,14 +128,15 @@ if __name__ == '__main__':
                          '-p', 
                          action='store',
                          help='Name of the parsing method to use, should start with "parse_", Ex: parse_nginx',
-                         dest='parser'
+                         dest='parser',
+                         default=None
                         )
 
     cmdline.add_argument('--pid-file', 
                          '-f', 
                          action='store',
                          help='Absolute path to use for the PID file, Ex: /tmp/parsible.pid',
-                         dest='pid_file'
+                         dest='pid_file',
                          default='/tmp/parsible.pid'
                         )
    
