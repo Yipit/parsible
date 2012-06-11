@@ -23,13 +23,13 @@ There are a few core ideas we tried to bring together in Parsible:
 
 1. Your parser should live inside of the `plugins/parsers` directory
 
-2. Your parsing function should start with `parse_`, for example the included nginx parser contains a function called `parse_nginx`
+2. Your parsing function should start with `parse_`, take for example the included nginx parser which contains a function called `parse_nginx`
 
 3. The parsing method signature should take one parameter which will consist of one line from the log file.  You may parse the line however you see fit, we opted for a regex implementation since it fits nicely with our dictionary output format and we expect our nginx log data to be well structured.
 
-4. The parsing method can output whatever you like, as it will be feed directly into the processing functions.  In our case we found that a dictionary works very well as lightweight storage for the parsed data although this is not required as you get to write the processing functions as well.
+4. The parsing method can output whatever you like, as it will be fed directly into the processing functions.  In our case we found that a dictionary works very well as lightweight storage for the parsed data although this is not required as you get to write the processing functions as well.
 
-5. Errors from a `parse` method are swallowed by the same try/except block that handles `process` methods due to lazy evaluation.  Currently there is not recording of these occurrences although this behavior can be easily modified.
+5. Errors from a `parse` method are swallowed by the same try/except block that handles `process` methods due to lazy evaluation.  Currently there is no recording of these occurrences although this behavior can be easily modified.
 
 ***
 
@@ -91,5 +91,35 @@ parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser pars
 * Python 2.7+ (due to argparse)
 * Some tasty logs
 
+
+### Warnings
+============
+
+Parsible does not gaurantee that every line of your log file will get parsed.  When it starts it goes to the end of the log file and the same is true when it reloads the file during rotation.  This can lead to some lines to not be processed during the switchover.  If this is a major issue for you please feel free to submit a feature request.
+
+Although Parsible is designed to be lightweight it does not gaurantee it.  User created plugins have no restrictions on their behavior and can monopolize resources as they see fit.
+
+
+### Contribute
+==============
+
+If you are interested in contributing to Parsible here are the steps:
+
+fork Parsible from here: http://github.com/Yipit/parsible
+
+Clone your fork
+Hack away
+If you are adding new functionality, document it in the README
+If necessary, rebase your commits into logical chunks, without errors
+Push the branch up to GitHub
+Send a pull request to the Yipit/parsible project.
+We'll take a look and try to get your changes in!
+
+### Contributors
+================
+
+None for now, but feel free to check the [commit history](https://github.com/Yipit/parsible/commits/master)!
+
+A special thanks to the fine folks at [Etsy](http://www.etsy.com) for publishing the [StatsD](http://github.com/etsy/statsd) project which gave me an excellent README to use as a template!
 
 
