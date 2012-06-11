@@ -16,7 +16,7 @@ There are a few core ideas we tried to bring together in Parsible:
 
 * **System Conventions**: Since Parsible works with logs it is wise to follow Linux logging conventions.  Parsible integrates easily with [logrotate](http://linuxcommand.org/man_pages/logrotate8.html).
 
-### Plugins
+## Plugins
 ===========
 
 **Parsers**: We wanted to make it easy to write custom parsers for whatever type of log file you may be reading.  Your custom parser has to follow a few conventions.  A simple nginx parser has been included as an example.
@@ -31,7 +31,7 @@ There are a few core ideas we tried to bring together in Parsible:
 
 5. Errors from a `parse` method are swallowed by the same try/except block that handles `process` methods due to lazy evaluation.  Currently there is not recording of these occurrences although this behavior can be easily modified.
 
-============
+***
 
 **Processors**: Once a line of log data is parsed it is time to do something useful with it.  You can have your processors do whatever you wish, although it is suggested that they remain stateless so that you don't have any lingering effects from feeding on large log files over the course of a day. Some sample `process` methods can be found in `plugins/outputs/url.py.`
 
@@ -45,13 +45,13 @@ There are a few core ideas we tried to bring together in Parsible:
 
 5. Any errors from a `process` method are currently swallowed and left untracked, although it is very simple to modify this behavior if desired.
 
-============
+***
 
 **Outputs**: Output functions are given their own directory to simplify the structure of Parsible.  The output functions should be called directly by your code in your `process` methods, but it is cleaner to logically separate them inside the plugin system for clarity.  Parsible will not attempt to run any `output` functions directly.  For some example `output` functions check out `plugins/outputs/statsd.py` 
 
-============
+***
 
-### System Conventions
+## System Conventions
 ======================
 
 **Log Rotate**: We like our code to play nice with our systems, especially for a program like Parsible.
