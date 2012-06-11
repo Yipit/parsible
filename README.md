@@ -77,14 +77,14 @@ And After
     endscript
 ```
 
-### Usage
+## Usage
 =========
 
 ```bash
 parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser parse_nginx
 ```
 
-### Requirements
+## Requirements
 ================
 
 * Linux
@@ -92,7 +92,7 @@ parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser pars
 * Some tasty logs
 
 
-### Warnings
+## Warnings
 ============
 
 Parsible does not gaurantee that every line of your log file will get parsed.  When it starts it goes to the end of the log file and the same is true when it reloads the file during rotation.  This can lead to some lines to not be processed during the switchover.  If this is a major issue for you please feel free to submit a feature request.
@@ -100,7 +100,7 @@ Parsible does not gaurantee that every line of your log file will get parsed.  W
 Although Parsible is designed to be lightweight it does not gaurantee it.  User created plugins have no restrictions on their behavior and can monopolize resources as they see fit.
 
 
-### Contribute
+##  Contribute
 ==============
 
 If you are interested in contributing to Parsible here are the steps:
@@ -115,7 +115,7 @@ Push the branch up to GitHub
 Send a pull request to the Yipit/parsible project.
 We'll take a look and try to get your changes in!
 
-### Contributors
+## Contributors
 ================
 
 None for now, but feel free to check the [commit history](https://github.com/Yipit/parsible/commits/master)!
