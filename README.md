@@ -115,11 +115,17 @@ If you are interested in contributing to Parsible here are the steps:
 fork Parsible from here: http://github.com/Yipit/parsible
 
 Clone your fork
+
 Hack away
+
 If you are adding new functionality, document it in the README
+
 If necessary, rebase your commits into logical chunks, without errors
+
 Push the branch up to GitHub
+
 Send a pull request to the Yipit/parsible project.
+
 We'll take a look and try to get your changes in!
 
 ## Contributors
