@@ -1,11 +1,10 @@
 #!/bin/python
-import sys, time, os, signal, imp
+import sys, time, os, signal, imp, argparse
 
 class Parsible(object):
     def import_plugins(self):
         # Initialize our lists
         self.processors = []
-        self.outputs = []
         
         current_file = os.path.abspath(__file__)
         current_directory = os.path.abspath(os.path.join(current_file, os.path.pardir))
@@ -31,17 +30,19 @@ class Parsible(object):
                         if method.startswith(plugin_mappings[plugin_type]):
                             _temp = __import__('plugins.%s.%s' % (plugin_type, parser_file), globals(), locals(), [method], -1)
                             if "parse" in plugin_mappings[plugin_type]:
-                                # Currently this will overwrite any previously found parsing functions, NBD
-                                setattr(self, "parsing_function", getattr(_temp, method))
-                            # Keep a list of our outputs, at the moment this list is not used
-                            elif "output" in plugin_mappings[plugin_type]:
-                                self.outputs.append(getattr(_temp, method))
+                                if self.parser is not None:
+                                    if method == self.parser:
+                                        setattr(self, "parsing_function", getattr(_temp, method))
+                                else:
+                                    # Currently this will overwrite any previously found parsing functions, NBD
+                                    setattr(self, "parsing_function", getattr(_temp, method))
                             # Construct our list of processing functions that we will call on each parsed line
                             elif "process" in plugin_mappings[plugin_type]:
                                 self.processors.append(getattr(_temp, method))
 
-    def __init__(self, input_file, pid_file='/tmp/parser.pid'):
+    def __init__(self, input_file, parser, pid_file):
         # Some messy business to import unknown files at runtime
+        self.parser = parser
         self.import_plugins()
         # Keep internal references to these so we can change and refresh them properly
         self.input_file = input_file
@@ -112,6 +113,32 @@ class Parsible(object):
         self.log_file.close()
 
 if __name__ == '__main__':
-    input_file = sys.argv[1]
-    p = Parsible(input_file)
+
+    cmdline = argparse.ArgumentParser(usage="usage: parsible.py --log-file /var/log/mylog [options]",
+                                      description="Tail a log file and filter each line to generate metrics that can be output to any desired endpoint.")
+
+    cmdline.add_argument('--log-file', 
+                         '-l', 
+                         action='store',
+                         help='The absolute path to the log file to be parsed, Ex: /var/log/mylog',
+                         dest='input_file'
+                        )
+
+    cmdline.add_argument('--parser', 
+                         '-p', 
+                         action='store',
+                         help='Name of the parsing method to use, should start with "parse_", Ex: parse_nginx',
+                         dest='parser'
+                         default=None
+                        )
+
+    cmdline.add_argument('--pid-file', 
+                         '-f', 
+                         action='store',
+                         help='Absolute path to use for the PID file, Ex: /tmp/parsible.pid',
+                         dest='pid_file'
+                         default='/tmp/parsible.pid'
+                        )
+   
+    p = Parsible(input_file, parser, pid_file)
     p.main()
