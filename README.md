@@ -112,21 +112,14 @@ Although Parsible is designed to be lightweight it does not gaurantee it.  User 
 
 If you are interested in contributing to Parsible here are the steps:
 
-fork Parsible from here: http://github.com/Yipit/parsible
-
-Clone your fork
-
-Hack away
-
-If you are adding new functionality, document it in the README
-
-If necessary, rebase your commits into logical chunks, without errors
-
-Push the branch up to GitHub
-
-Send a pull request to the Yipit/parsible project.
-
-We'll take a look and try to get your changes in!
+1. fork Parsible from here: http://github.com/Yipit/parsible
+2. Clone your fork
+3. Hack away
+4. If you are adding new functionality, document it in the README
+5. If necessary, rebase your commits into logical chunks, without errors
+6. Push the branch up to GitHub
+7. Send a pull request to the Yipit/parsible project.
+8. We'll take a look and try to get your changes in!
 
 ## Contributors
 ================
