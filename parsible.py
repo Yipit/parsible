@@ -142,6 +142,5 @@ if __name__ == '__main__':
                         )
 
     args = cmdline.parse_args()
-    import pdb; pdb.set_trace()
     p = Parsible(args.input_file, args.parser, args.pid_file)
     p.main()
