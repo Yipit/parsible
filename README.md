@@ -12,7 +12,7 @@ There are a few core ideas we tried to bring together in Parsible:
 
 * **Real Time**: Parsible will tail your log file as the lines come in, we opted away from a stateful approach where new lines are read in batches since we feel it simplifies the flow and reduces complexity.
 
-* **Generators**:  Log files can get big, really big.  By leveraging generators Parsible can keep it's memory footprint small and independent of the size of log file. There is no hard restriction on memory, disk, or CPU usage, so be careful when writing your custom plugins. 
+* **Generators**:  Log files can get big, really big.  By leveraging generators Parsible can keep it's memory footprint small and independent of the size of log file. There is no hard restriction on memory, disk, or CPU usage, so be careful when writing your custom plugins.
 
 * **System Conventions**: Since Parsible works with logs it is wise to follow Linux logging conventions.  Parsible integrates easily with [logrotate](http://linuxcommand.org/man_pages/logrotate8.html).
 
@@ -41,13 +41,13 @@ There are a few core ideas we tried to bring together in Parsible:
 
 3. Your parsing method can take in whatever you please.  The output of your parsing function will be fed directly to each processor that Parsible was able to discover.
 
-4. Outputting from parsing methods is up to you.  The suggested flow is that you import any output functions you wish to use directly and call them as needed.  
+4. Outputting from parsing methods is up to you.  The suggested flow is that you import any output functions you wish to use directly and call them as needed.
 
 5. Any errors from a `process` method are currently swallowed and left untracked, although it is very simple to modify this behavior if desired.
 
 ***
 
-**Outputs**: Output functions are given their own directory to simplify the structure of Parsible.  The output functions should be called directly by your code in your `process` methods, but it is cleaner to logically separate them inside the plugin system for clarity.  Parsible will not attempt to run any `output` functions directly.  For some example `output` functions check out `plugins/outputs/statsd.py` 
+**Outputs**: Output functions are given their own directory to simplify the structure of Parsible.  The output functions should be called directly by your code in your `process` methods, but it is cleaner to logically separate them inside the plugin system for clarity.  Parsible will not attempt to run any `output` functions directly.  For some example `output` functions check out `plugins/outputs/statsd.py`
 
 ***
 
@@ -84,12 +84,14 @@ And After
 2. Write your parser (or use one someone else wrote!)
 3. Figure out how you want to process your log lines and write some processors
 4. Set up any outputs you want to use
-5. Run it! (We keep ours under `supervisord`)
+5. Run it! (We keep ours running under `supervisord`, although we have not had issues with crashes.)
 
 
 ```bash
 parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser parse_nginx
 ```
+
+To add debug messages regarding errors that my have been swallowed by Parsible add the `--debug True` option to your command line arguments.  This can be relatively verbose since it can create multiple messages per processed line so it is not the recommended production configuration.
 
 ## Requirements
 ================
@@ -105,6 +107,8 @@ parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser pars
 Parsible does not gaurantee that every line of your log file will get parsed.  When it starts it goes to the end of the log file and the same is true when it reloads the file during rotation.  This can lead to some lines to not be processed during the switchover.  If this is a major issue for you please feel free to submit a feature request.
 
 Although Parsible is designed to be lightweight it does not gaurantee it.  User created plugins have no restrictions on their behavior and can monopolize resources as they see fit.
+
+Parsible grabs a 'line' based on the return of file.readline().  This means it usually won't handle multiline exceptions very well.  Feel free to request the feature if you want it added.
 
 
 ##  Contribute
