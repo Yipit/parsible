@@ -146,7 +146,6 @@ class Parsible(object):
             self.run_processors(parsed_line)
 
         # We probably will never reach here, but it pays to be tidy just in case we change code in the future
-        import pdb; pdb.set_trace()
         self.log_file.close()
         self.parsible_exit(0)
 
