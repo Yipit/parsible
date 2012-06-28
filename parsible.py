@@ -53,8 +53,9 @@ class Parsible(object):
             self.logger.setLevel(logging.ERROR)
 
 
-    def __init__(self, input_file, parser, pid_file, debug):
+    def __init__(self, input_file, parser, pid_file, debug, batch):
         self.debug = debug
+        self.batch = batch
         self.set_logging()
         # Some messy business to import unknown files at runtime, cool stuff inside
         self.parser = parser
@@ -63,7 +64,7 @@ class Parsible(object):
         self.input_file = input_file
         self.pid_file = pid_file
 
-    def exit(self, status):
+    def parsible_exit(self, status):
         os.remove(self.pid_file)
         sys.exit(status)
 
@@ -72,7 +73,7 @@ class Parsible(object):
             self.log_file = open(self.input_file)
         except IOError:
             print "Unable to open log file"
-            exit(1)
+            self.parsible_exit(1)
 
     def reload_file(self, signum, frame):
         self.log_file.close()
@@ -93,12 +94,17 @@ class Parsible(object):
         # Shamelessly drafted from http://www.dabeaz.com/generators/Generators.pdf
         if self.debug:
             iterations = 0
-        # Go to the end of the file
-        self.log_file.seek(0,2)
+
+        if not self.batch:
+            # Go to the end of the file for tailing, otherwise we start at the beginning
+            self.log_file.seek(0,2)
         while True:
             # Get our latest line (via a Generator) or None if nothing new is in place
             line = self.log_file.readline()
             if not line:
+                if self.batch:
+                    self.logger.debug('Ending Batch Run')
+                    raise StopIteration
                 if self.debug:
                     iterations += 1
                     self.logger.debug('Tick Tock, waited for {} iterations'.format(iterations))
@@ -140,7 +146,9 @@ class Parsible(object):
             self.run_processors(parsed_line)
 
         # We probably will never reach here, but it pays to be tidy just in case we change code in the future
+        import pdb; pdb.set_trace()
         self.log_file.close()
+        self.parsible_exit(0)
 
 if __name__ == '__main__':
 
@@ -160,7 +168,7 @@ if __name__ == '__main__':
     cmdline.add_argument('--parser',
                          '-p',
                          action='store',
-                         help='Name of the parsing method to use, should start with "parse_", Ex: parse_nginx',
+                         help='Name of the parsing method to use, should start with "parse_", Ex: parse_nginx   If this is not set, Parsible will use the first parser found.',
                          dest='parser',
                          default=None
                         )
@@ -181,6 +189,14 @@ if __name__ == '__main__':
                          default=False
                         )
 
+    cmdline.add_argument('--batch-mode',
+                         '-b',
+                         action='store',
+                         help='If Set, Parsible will start at the top of the log file and exit once it reaches the end.  Useful for processing logs that are not realtime',
+                         dest='batch',
+                         default=False
+                        )
+
     args = cmdline.parse_args()
-    p = Parsible(args.input_file, args.parser, args.pid_file, args.debug)
+    p = Parsible(args.input_file, args.parser, args.pid_file, args.debug, args.batch)
     p.main()
