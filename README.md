@@ -12,6 +12,8 @@ There are a few core ideas we tried to bring together in Parsible:
 
 * **Real Time**: Parsible will tail your log file as the lines come in, we opted away from a stateful approach where new lines are read in batches since we feel it simplifies the flow and reduces complexity.
 
+* **Batch Processing**: Parsible has a switch to modify the behavior so that it acts like a standard parser.  Instead of tailing from the end of the file, it will start at the beginning and exit once it has reached the last line.
+
 * **Generators**:  Log files can get big, really big.  By leveraging generators Parsible can keep it's memory footprint small and independent of the size of log file. There is no hard restriction on memory, disk, or CPU usage, so be careful when writing your custom plugins.
 
 * **System Conventions**: Since Parsible works with logs it is wise to follow Linux logging conventions.  Parsible integrates easily with [logrotate](http://linuxcommand.org/man_pages/logrotate8.html).
@@ -92,6 +94,8 @@ parsible.py --log-file /var/log/mylog --pid-file /tmp/parsible.pid --parser pars
 ```
 
 To add debug messages regarding errors that my have been swallowed by Parsible add the `--debug True` option to your command line arguments.  This can be relatively verbose since it can create multiple messages per processed line so it is not the recommended production configuration.
+
+To enable batch processing mode, just append `--batch-mode True` to your command line invocation and Parsible will act as a standard parser that exits at the end of the file.  This can be useful for backfilling data or doing ad hoc analysis of old files.
 
 ## Requirements
 ================
