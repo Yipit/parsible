@@ -114,6 +114,7 @@ Although Parsible is designed to be lightweight it does not gaurantee it.  User 
 
 Parsible grabs a 'line' based on the return of file.readline().  This means it usually won't handle multiline exceptions very well.  Feel free to request the feature if you want it added.
 
+The mispelling of the name of the project is intentional (vs Parsable)
 
 ##  Contribute
 ==============
@@ -134,6 +135,6 @@ If you are interested in contributing to Parsible here are the steps:
 
 None for now, but feel free to check the [commit history](https://github.com/Yipit/parsible/commits/master)!
 
-A special thanks to the fine folks at [Etsy](http://www.etsy.com) for publishing the [StatsD](http://github.com/etsy/statsd) project which gave me an excellent README to use as a template!
+A special thanks to the fine folks at [Etsy](http://www.etsy.com) for publishing the [StatsD](http://github.com/etsy/statsd) project which gave me an excellent README to use as a template.
 
 
