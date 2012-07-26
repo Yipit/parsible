@@ -12,15 +12,17 @@ class Parsible(object):
                             'processors' : 'process'
                           }
 
+        import pdb; pdb.set_trace()
         # Figure out where we are and start looking for plugins
-        current_file = os.path.abspath(__file__)
-        current_directory = os.path.abspath(os.path.join(current_file, os.path.pardir))
-        plugins_directory = current_directory + "/plugins"
+        if self.plugins_directory is None:
+            current_file = os.path.abspath(__file__)
+            current_directory = os.path.abspath(os.path.join(current_file, os.path.pardir))
+            self.plugins_directory = current_directory + "/plugins"
 
         # Iterate through our potential plugin locations so we can import everything
         # IMPORTANT:  Without this block we can't use the buzzword 'Autodiscover', very necessary
         for plugin_type in plugin_mappings.keys():
-            directory = plugins_directory + "/" + plugin_type
+            directory = self.plugins_directory + "/" + plugin_type
             for f in os.listdir(directory):
                 if f.endswith(".py") and not f.startswith("_"):
                     # Get the name of the file for importing
@@ -53,12 +55,13 @@ class Parsible(object):
             self.logger.setLevel(logging.ERROR)
 
 
-    def __init__(self, input_file, parser, pid_file, debug, batch):
+    def __init__(self, input_file, parser, pid_file, debug, batch, plugins_directory):
         self.debug = debug
         self.batch = batch
+        self.plugins_directory = plugins_directory
         self.set_logging()
-        # Some messy business to import unknown files at runtime, cool stuff inside
         self.parser = parser
+        # Some messy business to import unknown files at runtime, cool stuff inside
         self.import_plugins()
         # Keep internal references to these so we can change and refresh them properly
         self.input_file = input_file
@@ -196,6 +199,17 @@ if __name__ == '__main__':
                          default=False
                         )
 
+    cmdline.add_argument('--plugins-directory',
+                         '-pd',
+                         action='store',
+                         help='''
+If Set, Parsible will search the given location for the plugins directories instead of the default location.
+Note: This should be the absolute path to your custom plugins directory.
+''',
+                         dest='plugins_directory',
+                         default=None
+                        )
+
     args = cmdline.parse_args()
-    p = Parsible(args.input_file, args.parser, args.pid_file, args.debug, args.batch)
+    p = Parsible(args.input_file, args.parser, args.pid_file, args.debug, args.batch, args.plugins_directory)
     p.main()
