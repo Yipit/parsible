@@ -53,9 +53,10 @@ class Parsible(object):
             self.logger.setLevel(logging.ERROR)
 
 
-    def __init__(self, input_file, parser, pid_file, debug, batch):
+    def __init__(self, input_file, parser, pid_file, debug, batch, auto_reload):
         self.debug = debug
         self.batch = batch
+        self.auto_reload = auto_reload
         self.set_logging()
         # Some messy business to import unknown files at runtime, cool stuff inside
         self.parser = parser
@@ -80,6 +81,23 @@ class Parsible(object):
         self.load_file()
         return
 
+    def reload_file_if_changed(self):
+        # Get the Inode for our current file
+        loaded_file_inode = os.fstat(self.log_file.fileno()).st_ino
+
+        # Check the inode of the file path that was specified
+        current_file = open(self.input_file)
+        current_file_inode = os.fstat(current_file.fileno()).st_ino
+        current_file.close()
+
+        # Reload if there is a discrepancy
+        if loaded_file_inode != current_file_inode:
+            self.reload_file(None, None)
+            self.logger.debug('Log File Changed, Reloading...')
+        else:
+            self.logger.debug('Log File Unchanged')
+        return
+
     def set_pid_file(self):
         # All this to set up a PID file
         f = open(self.pid_file, 'w')
@@ -92,8 +110,7 @@ class Parsible(object):
 
     def follow(self):
         # Shamelessly drafted from http://www.dabeaz.com/generators/Generators.pdf
-        if self.debug:
-            iterations = 0
+        empty_iterations = 0
 
         if not self.batch:
             # Go to the end of the file for tailing, otherwise we start at the beginning
@@ -106,14 +123,20 @@ class Parsible(object):
                     self.logger.debug('Ending Batch Run')
                     raise StopIteration
                 if self.debug:
-                    iterations += 1
-                    self.logger.debug('Tick Tock, waited for {} iterations'.format(iterations))
+                    self.logger.debug('Tick Tock, waited for {} iterations'.format(empty_iterations))
                 # Essentially spinlock on our logfile waiting for updates to become available
                 # Depending on update speed this iteration time can be decreased
+                empty_iterations += 1
                 time.sleep(0.1)
+
+                if self.auto_reload:
+                    # If waiting for new lines, check once per second to reload
+                    if empty_iterations > 100:
+                        empty_iterations = 0
+                        self.reload_file_if_changed()
                 continue
-            if self.debug:
-                iterations = 0
+
+            empty_iterations = 0
             # Yield so we can be called as a generator, decoupling the waiting issues.
             # Our parsing function can be evaluated later
             yield self.parsing_function(line)
@@ -196,6 +219,14 @@ if __name__ == '__main__':
                          default=False
                         )
 
+    cmdline.add_argument('--auto-reload',
+                         '-a',
+                         action='store',
+                         help='If Set, when receiving empty lines Parsible will check if there is a discrepancy between the stored and existing file descriptors for the log file. If a discrepancy is found, Parsible will reload the new file.',
+                         dest='auto_reload',
+                         default=False
+                        )
+
     args = cmdline.parse_args()
-    p = Parsible(args.input_file, args.parser, args.pid_file, args.debug, args.batch)
+    p = Parsible(args.input_file, args.parser, args.pid_file, args.debug, args.batch, args.auto_reload)
     p.main()
