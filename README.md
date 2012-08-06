@@ -79,6 +79,8 @@ And After
     endscript
 ```
 
+If you don't care to set up `logrotate` or `logrotate` does not apply, just use `--auto-reload True` and it will try to reload the log file after 10 seconds of inactivity.
+
 ## Usage
 =========
 
