@@ -130,7 +130,7 @@ class Parsible(object):
                 time.sleep(0.1)
 
                 if self.auto_reload:
-                    # If waiting for new lines, check once per second to reload
+                    # If waiting for new lines, check once per 10 seconds to reload
                     if empty_iterations > 100:
                         empty_iterations = 0
                         self.reload_file_if_changed()
