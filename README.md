@@ -1,6 +1,6 @@
 # Parsible
 
-A tool to help you parse your log files, written in [Python](http://http://python.org/).  The goal was to make a tool that will do the grunt work of following your logs in realtime, and to be easily be extended via plugins.
+A tool to help you parse your log files, written in [Python](http://http://python.org/).  The goal was to make a tool that will do the grunt work of following your logs in realtime, and to be easily be extended via plugins. Check out our tech blog post on why we wanted Parsible [here]()http://tech.yipit.com/2012/08/03/parsible-straightforward-log-parsing/.
 
 
 ## Concepts
