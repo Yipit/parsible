@@ -79,6 +79,8 @@ And After
     endscript
 ```
 
+If you don't care to set up `logrotate` or `logrotate` does not apply, just use `--auto-reload True` and it will try to reload the log file after 10 seconds of inactivity.
+
 ## Usage
 =========
 
@@ -108,7 +110,7 @@ To enable batch processing mode, just append `--batch-mode True` to your command
 ## Warnings
 ============
 
-Parsible does not gaurantee that every line of your log file will get parsed.  When it starts it goes to the end of the log file and the same is true when it reloads the file during rotation.  This can lead to some lines to not be processed during the switchover.  If this is a major issue for you please feel free to submit a feature request.
+Parsible does not gaurantee that every line of your log file will get parsed.  When it is first started Parsible seeks to the end of the log file. Additionally, whenever the `USR1` signal is received Parsible will attempt to load the file at the configured location.  There is no logic to make sure the current file is fully parsed before switching. This can lead to some lines not being processed during the switchover.  If this is a major issue for you please feel free to submit a feature request.
 
 Although Parsible is designed to be lightweight it does not gaurantee it.  User created plugins have no restrictions on their behavior and can monopolize resources as they see fit.
 
