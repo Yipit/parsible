@@ -50,7 +50,7 @@ class Parsible(object):
         if self.debug:
             self.logger.setLevel(logging.DEBUG)
         else:
-            self.logger.setLevel(logging.ERROR)
+            self.logger.setLevel(logging.INFO)
 
 
     def __init__(self, input_file, parser, pid_file, debug, batch, auto_reload):
@@ -98,6 +98,24 @@ class Parsible(object):
             self.logger.debug('Log File Unchanged')
         return
 
+    def _get_current_byte_position(self):
+        return self.log_file.tell()
+
+    def _get_file_byte_length(self):
+        return os.path.getsize(self.input_file)
+
+    def _run_periodic_functions(self):
+        """
+        Functions that need to be run periodicly for system statistics,
+        such as logging the current file progression.
+        """
+        current = self._get_current_byte_position()
+        size = self._get_file_byte_length()
+        percent = ( float(current) / float(size) ) * 100
+        self.logger.error('File Statistics: Current Byte Location {current}'.format(current=current))
+        self.logger.error('File Statistics: Current File Byte Size {size}'.format(size=size))
+        self.logger.error('File Statistics: Processed Percentage {percent:.2f} %'.format(percent=percent))
+
     def set_pid_file(self):
         # All this to set up a PID file
         f = open(self.pid_file, 'w')
@@ -111,6 +129,7 @@ class Parsible(object):
     def follow(self):
         # Shamelessly drafted from http://www.dabeaz.com/generators/Generators.pdf
         empty_iterations = 0
+        tick = 0
 
         if not self.batch:
             # Go to the end of the file for tailing, otherwise we start at the beginning
@@ -137,6 +156,11 @@ class Parsible(object):
                 continue
 
             empty_iterations = 0
+            tick += 1
+            tick = tick % 100
+            if tick == 0:
+                # Check every 100 iterations
+                self._run_periodic_functions()
             # Yield so we can be called as a generator, decoupling the waiting issues.
             # Our parsing function can be evaluated later
             yield self.parsing_function(line)
