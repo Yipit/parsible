@@ -8,7 +8,7 @@ def parse_nginx(line):
         for k, v in r.groupdict().iteritems():
             if v is None or v is "-":
                 continue
-            if "request" in k:
+            if k == "request":
                 if "?" in v:
                     request = v.partition("?")
                     path = request[0]
